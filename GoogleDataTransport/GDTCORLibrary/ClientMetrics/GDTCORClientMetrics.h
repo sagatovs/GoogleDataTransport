@@ -22,6 +22,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/// A data model to keep and pass client metrics.
 @interface GDTCORClientMetrics : NSObject
 
 /// The date when the metrics collection started.
@@ -33,9 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// Maximum number of bytes that is allowed to be used by the storage for events and batches.
 @property(nonatomic, readonly) GDTCORStorageSizeBytes maximumStorageSize;
 
-/// Dropped event counters by mapping ID (log source).
+/// Dropped event counters.
 @property(nonatomic, readonly)
-    NSDictionary<NSString *, GDTCORDroppedEventsCounter *> *droppedEventsByMappingID;
+    NSDictionary<NSString *, NSArray<GDTCORDroppedEventsCounter *> *> *droppedEventsByMappingID;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -43,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithCurrentStorageSize:(GDTCORStorageSizeBytes)currentStorageSize
                         maximumStorageSize:(GDTCORStorageSizeBytes)maximumStorageSize
                   droppedEventsByMappingID:
-                      (NSDictionary<NSString *, GDTCORDroppedEventsCounter *> *)
+                      (NSDictionary<NSString *, NSArray<GDTCORDroppedEventsCounter *> *> *)
                           droppedEventsByMappingID NS_DESIGNATED_INITIALIZER;
 
 @end
