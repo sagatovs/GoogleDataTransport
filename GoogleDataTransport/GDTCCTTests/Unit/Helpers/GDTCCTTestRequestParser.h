@@ -19,6 +19,7 @@
 #import "GoogleDataTransport/GDTCORLibrary/Public/GoogleDataTransport/GDTCOREvent.h"
 
 #import "GoogleDataTransport/GDTCCTLibrary/Protogen/nanopb/cct.nanopb.h"
+#include "GoogleDataTransport/GDTCCTLibrary/Protogen/nanopb/client_metrics.nanopb.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,6 +38,13 @@ NS_ASSUME_NONNULL_BEGIN
 /// @return An array of `GDTCOREvent` objects from the request if parsed successfully.
 + (NSArray<GDTCOREvent *> *)eventsWithBatchRequest:(gdt_cct_BatchedLogRequest)batchRequest
                                              error:(NSError **)outError;
+
+/// Tries to parse `gdt_client_metrics_ClientMetrics` from an event data.
+/// @param data The event data. It should be protobuf encoded `gdt_client_metrics_ClientMetrics`.
+/// @param outError An error pointer to assign parsing error if there is.
+/// @return An instance of `gdt_client_metrics_ClientMetrics` in case of success. The instance will
+/// have default values in the case of an error (check `outError`).
++ (gdt_client_metrics_ClientMetrics)clientMetricsWithData:(NSData *)data error:(NSError **)outError;
 
 @end
 

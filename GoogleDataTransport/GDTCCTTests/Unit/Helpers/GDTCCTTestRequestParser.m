@@ -42,7 +42,6 @@
     if (outError != NULL) {
       *outError = [NSError errorWithDomain:NSURLErrorDomain code:-1 userInfo:userInfo];
     }
-    request = (gdt_cct_BatchedLogRequest)gdt_cct_BatchedLogRequest_init_default;
   }
   return request;
 }
@@ -69,6 +68,22 @@
   }
 
   return [events copy];
+}
+
++ (gdt_client_metrics_ClientMetrics)clientMetricsWithData:(NSData *)data
+                                                    error:(NSError **)outError {
+  gdt_client_metrics_ClientMetrics clientMetrics = gdt_client_metrics_ClientMetrics_init_default;
+
+  pb_istream_t istream = pb_istream_from_buffer([data bytes], [data length]);
+  if (!pb_decode(&istream, gdt_client_metrics_ClientMetrics_fields, &clientMetrics)) {
+    NSString *nanopb_error = [NSString stringWithFormat:@"%s", PB_GET_ERROR(&istream)];
+    NSDictionary *userInfo = @{@"nanopb error:" : nanopb_error};
+    if (outError != NULL) {
+      *outError = [NSError errorWithDomain:NSURLErrorDomain code:-1 userInfo:userInfo];
+    }
+  }
+
+  return clientMetrics;
 }
 
 @end
