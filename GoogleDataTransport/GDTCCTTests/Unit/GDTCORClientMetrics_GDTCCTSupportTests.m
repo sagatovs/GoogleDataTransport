@@ -18,8 +18,8 @@
 
 #import "GoogleDataTransport/GDTCCTLibrary/GDTCORClientMetrics+GDTCCTSupport.h"
 
-#import "GoogleDataTransport/GDTCORLibrary/ClientMetrics/GDTCORDroppedEventsCounter.h"
 #import "GoogleDataTransport/GDTCCTTests/Unit/Helpers/GDTCCTTestRequestParser.h"
+#import "GoogleDataTransport/GDTCORLibrary/ClientMetrics/GDTCORDroppedEventsCounter.h"
 
 @interface GDTCORClientMetrics_GDTCCTSupportTests : XCTestCase
 
@@ -29,8 +29,9 @@
 
 - (void)testTransportBytes {
   GDTCORClientMetrics *clientMetrics = [[GDTCORClientMetrics alloc]
-                                        initWithCurrentStorageSize:1234 maximumStorageSize:5678
-                                        droppedEventsByMappingID:[self generateDroppedEventByMappingID]];
+      initWithCurrentStorageSize:1234
+              maximumStorageSize:5678
+        droppedEventsByMappingID:[self generateDroppedEventByMappingID]];
 
   // Try to encode the metrics.
   NSData *encodedMetrics = [clientMetrics transportBytes];
@@ -39,46 +40,57 @@
 
   // Try to decode.
   NSError *decodingError;
-  gdt_client_metrics_ClientMetrics decodedMetrics = [GDTCCTTestRequestParser clientMetricsWithData:encodedMetrics error:&decodingError];
+  gdt_client_metrics_ClientMetrics decodedMetrics =
+      [GDTCCTTestRequestParser clientMetricsWithData:encodedMetrics error:&decodingError];
   XCTAssertNil(decodingError);
 
   // Verify decoded metrics.
   // Verify storage metrics.
-  XCTAssertEqual(decodedMetrics.global_metrics.storage_metrics.current_cache_size_bytes, clientMetrics.currentStorageSize);
-  XCTAssertEqual(decodedMetrics.global_metrics.storage_metrics.max_cache_size_bytes, clientMetrics.maximumStorageSize);
+  XCTAssertEqual(decodedMetrics.global_metrics.storage_metrics.current_cache_size_bytes,
+                 clientMetrics.currentStorageSize);
+  XCTAssertEqual(decodedMetrics.global_metrics.storage_metrics.max_cache_size_bytes,
+                 clientMetrics.maximumStorageSize);
 
   // Verify log source metrics.
-  XCTAssertEqual(decodedMetrics.log_source_metrics_count, clientMetrics.droppedEventsByMappingID.count);
+  XCTAssertEqual(decodedMetrics.log_source_metrics_count,
+                 clientMetrics.droppedEventsByMappingID.count);
 
-  for (int logSourceIndex = 0; logSourceIndex < decodedMetrics.log_source_metrics_count; logSourceIndex++) {
-    gdt_client_metrics_LogSourceMetrics decodedLogSourceMetrics = decodedMetrics.log_source_metrics[logSourceIndex];
-
+  for (int logSourceIndex = 0; logSourceIndex < decodedMetrics.log_source_metrics_count;
+       logSourceIndex++) {
+    gdt_client_metrics_LogSourceMetrics decodedLogSourceMetrics =
+        decodedMetrics.log_source_metrics[logSourceIndex];
 
     // Verify log source (mapping ID).
-    NSString *mappingID = [[NSString alloc] initWithBytes:decodedLogSourceMetrics.log_source->bytes length:decodedLogSourceMetrics.log_source->size encoding:NSUTF8StringEncoding];
+    NSString *mappingID = [[NSString alloc] initWithBytes:decodedLogSourceMetrics.log_source->bytes
+                                                   length:decodedLogSourceMetrics.log_source->size
+                                                 encoding:NSUTF8StringEncoding];
     XCTAssertNotNil(mappingID);
 
-    NSArray<GDTCORDroppedEventsCounter *> *originalEvents = clientMetrics.droppedEventsByMappingID[mappingID];
+    NSArray<GDTCORDroppedEventsCounter *> *originalEvents =
+        clientMetrics.droppedEventsByMappingID[mappingID];
     XCTAssertNotNil(originalEvents);
 
     // Verify dropped event counters.
     XCTAssertEqual(decodedLogSourceMetrics.log_event_dropped_count, originalEvents.count);
-    for (int droppedEventsIndex = 1; droppedEventsIndex < decodedLogSourceMetrics.log_event_dropped_count; droppedEventsIndex++) {
-
-      gdt_client_metrics_LogEventDropped decodedDroppedEvent = decodedLogSourceMetrics.log_event_dropped[droppedEventsIndex];
+    for (int droppedEventsIndex = 1;
+         droppedEventsIndex < decodedLogSourceMetrics.log_event_dropped_count;
+         droppedEventsIndex++) {
+      gdt_client_metrics_LogEventDropped decodedDroppedEvent =
+          decodedLogSourceMetrics.log_event_dropped[droppedEventsIndex];
 
       GDTCORDroppedEventsCounter *originalDroppedEvent = originalEvents[droppedEventsIndex];
 
       XCTAssertEqual(decodedDroppedEvent.events_dropped_count, originalDroppedEvent.eventCount);
-      XCTAssertEqual([self dropReasonForProtoReason:decodedDroppedEvent.reason], originalDroppedEvent.dropReason);
+      XCTAssertEqual([self dropReasonForProtoReason:decodedDroppedEvent.reason],
+                     originalDroppedEvent.dropReason);
     }
   }
 }
 
 #pragma mark - Helpers
 
-- (GDTCOREventDropReason)dropReasonForProtoReason:(gdt_client_metrics_LogEventDropped_Reason)protoReason {
-
+- (GDTCOREventDropReason)dropReasonForProtoReason:
+    (gdt_client_metrics_LogEventDropped_Reason)protoReason {
   switch (protoReason) {
     case gdt_client_metrics_LogEventDropped_Reason_REASON_UNKNOWN:
       return GDTCOREventDropReasonUnknown;
@@ -97,9 +109,11 @@
   }
 }
 
-- (NSDictionary<NSString *, NSArray<GDTCORDroppedEventsCounter *> *> *)generateDroppedEventByMappingID {
+- (NSDictionary<NSString *, NSArray<GDTCORDroppedEventsCounter *> *> *)
+    generateDroppedEventByMappingID {
   NSInteger numberOfMappingIDs = 10;
-  NSMutableDictionary<NSString *, NSArray<GDTCORDroppedEventsCounter *> *> *droppedEventsByMappingID = [NSMutableDictionary dictionaryWithCapacity:numberOfMappingIDs];
+  NSMutableDictionary<NSString *, NSArray<GDTCORDroppedEventsCounter *> *>
+      *droppedEventsByMappingID = [NSMutableDictionary dictionaryWithCapacity:numberOfMappingIDs];
 
   for (NSInteger i = 0; i < numberOfMappingIDs; i++) {
     NSString *mappingID = @(i).stringValue;
@@ -110,11 +124,14 @@
   return droppedEventsByMappingID;
 }
 
-- (NSArray<GDTCORDroppedEventsCounter *> *)generateDroppedEventsWithMappingID:(NSString *)mappingID {
+- (NSArray<GDTCORDroppedEventsCounter *> *)generateDroppedEventsWithMappingID:
+    (NSString *)mappingID {
   NSMutableArray<GDTCORDroppedEventsCounter *> *events = [NSMutableArray array];
-  for (GDTCOREventDropReason reason = GDTCOREventDropReasonUnknown; reason < GDTCOREventDropReasonServerError; reason++) {
+  for (GDTCOREventDropReason reason = GDTCOREventDropReasonUnknown;
+       reason < GDTCOREventDropReasonServerError; reason++) {
     [events addObject:[[GDTCORDroppedEventsCounter alloc] initWithEventCount:111
-                                                                  dropReason:reason mappingID:mappingID]];
+                                                                  dropReason:reason
+                                                                   mappingID:mappingID]];
   }
   return [events copy];
 }
