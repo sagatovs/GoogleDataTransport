@@ -19,6 +19,7 @@
 #import "GoogleDataTransport/GDTCCTLibrary/GDTCORClientMetrics+GDTCCTSupport.h"
 
 #import "GoogleDataTransport/GDTCORLibrary/ClientMetrics/GDTCORDroppedEventsCounter.h"
+#import "GoogleDataTransport/GDTCCTTests/Unit/Helpers/GDTCCTTestRequestParser.h"
 
 @interface GDTCORClientMetrics_GDTCCTSupportTests : XCTestCase
 
@@ -27,13 +28,15 @@
 @implementation GDTCORClientMetrics_GDTCCTSupportTests
 
 - (void)testTransportBytes {
-  //  NSDictionary<NSString *, GDTCORDroppedEventsCounter *> *droppedEventsByMappingID = @ {
-  //    @"111" : [[GDTCORDroppedEventsCounter alloc] initWithEventCount:111
-  //    dropReason:<#(GDTCOREventDropReason)#> mappingID:<#(nonnull NSString *)#>]
-  //  };
-  //  GDTCORClientMetrics *clientMetrics = [[GDTCORClientMetrics alloc]
-  //  initWithCurrentStorageSize:1234 maximumStorageSize:5678
-  //  droppedEventsByMappingID:droppedEventsByMappingID];
+  NSArray<NSString *> *dropped
+
+  NSDictionary<NSString *, GDTCORDroppedEventsCounter *> *droppedEventsByMappingID = @ {
+    @"111" : [[GDTCORDroppedEventsCounter alloc] initWithEventCount:111
+                                                         dropReason:GDTCOREventDropReasonStorageFull mappingID:@"111"]
+  };
+  GDTCORClientMetrics *clientMetrics = [[GDTCORClientMetrics alloc]
+                                        initWithCurrentStorageSize:1234 maximumStorageSize:5678
+                                        droppedEventsByMappingID:droppedEventsByMappingID];
 }
 
 @end
