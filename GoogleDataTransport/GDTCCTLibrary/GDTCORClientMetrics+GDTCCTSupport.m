@@ -67,6 +67,7 @@
   gdt_client_metrics_StorageMetrics storageMetrics = gdt_client_metrics_StorageMetrics_init_zero;
   storageMetrics.current_cache_size_bytes = self.currentStorageSize;
   storageMetrics.max_cache_size_bytes = self.maximumStorageSize;
+  clientMetrics.global_metrics.storage_metrics = storageMetrics;
 
   gdt_client_metrics_GlobalMetrics globalMetrics = gdt_client_metrics_GlobalMetrics_init_zero;
   globalMetrics.storage_metrics = storageMetrics;
