@@ -22,10 +22,12 @@
 #import "FBLPromises.h"
 #endif
 
+#import "GoogleDataTransport/GDTCORLibrary/Internal/GDTCORRegistrar.h"
+
 @implementation GDTCORClientMetricsController
 
-+ (instancetype)shared {
-  return nil;
++ (void)load {
+  [GDTCORRegistrar sharedInstance].clientMetricsController = [[self alloc] init];
 }
 
 - (nonnull FBLPromise<NSNull *> *)confirmSendingClientMetrics:

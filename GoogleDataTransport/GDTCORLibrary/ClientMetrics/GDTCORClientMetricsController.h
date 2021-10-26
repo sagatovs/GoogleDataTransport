@@ -24,10 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface GDTCORClientMetricsController : NSObject <GDTCORClientMetricsControllerProtocol>
 
-/// Returns a shared instance of the class.
-+ (instancetype)shared;
-
-- (instancetype)init NS_UNAVAILABLE;
+//- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

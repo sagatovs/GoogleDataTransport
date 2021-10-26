@@ -16,6 +16,8 @@
 
 #import <XCTest/XCTest.h>
 
+#import "FBLPromise+Testing.h"
+
 #import "GoogleDataTransport/GDTCORLibrary/Internal/GDTCORStorageProtocol.h"
 #import "GoogleDataTransport/GDTCORTests/Common/Categories/GDTCORRegistrar+Testing.h"
 
@@ -23,9 +25,12 @@
 #import "GoogleDataTransport/GDTCCTLibrary/Private/GDTCCTUploader.h"
 
 #import "GoogleDataTransport/GDTCCTTests/Common/TestStorage/GDTCCTTestStorage.h"
+#import "GoogleDataTransport/GDTCORTests/Unit/Helpers/GDTCORClientMetricsControllerFake.h"
 
 #import "GoogleDataTransport/GDTCCTTests/Unit/Helpers/GDTCCTEventGenerator.h"
 #import "GoogleDataTransport/GDTCCTTests/Unit/TestServer/GDTCCTTestServer.h"
+#import "GoogleDataTransport/GDTCCTTests/Unit/Helpers/GDTCCTTestRequestParser.h"
+
 
 typedef NS_ENUM(NSInteger, GDTNextRequestWaitTimeSource) {
   GDTNextRequestWaitTimeSourceResponseBody,
@@ -43,6 +48,11 @@ typedef NS_ENUM(NSInteger, GDTNextRequestWaitTimeSource) {
 @property(nonatomic) GDTCCTTestServer *testServer;
 
 @property(nonatomic) GDTCCTTestStorage *testStorage;
+
+/// Fake client metrics controller.
+@property(nonatomic) GDTCORClientMetricsControllerFake *clientMetricsController;
+/// Client metrics to be returned by the fake metrics controller by default.
+@property(nonatomic) GDTCORClientMetrics *clientMetrics;
 
 @end
 
@@ -67,6 +77,14 @@ typedef NS_ENUM(NSInteger, GDTNextRequestWaitTimeSource) {
   self.uploader = [[GDTCCTUploader alloc] init];
   GDTCCTUploader.testServerURL =
       [self.testServer.serverURL URLByAppendingPathComponent:@"logBatch"];
+
+  // Configure fake client metrics controller.
+  self.clientMetricsController = [[GDTCORClientMetricsControllerFake alloc] init];
+  [GDTCORRegistrar sharedInstance].clientMetricsController = self.clientMetricsController;
+
+  self.clientMetricsController.getMetricsHandler = ^FBLPromise<GDTCORClientMetrics *> * _Nonnull{
+    return [FBLPromise res];
+  };
 }
 
 - (void)tearDown {
@@ -608,14 +626,15 @@ typedef NS_ENUM(NSInteger, GDTNextRequestWaitTimeSource) {
   __weak id weakSelf = self;
   XCTestExpectation *responseSentExpectation = [self expectationWithDescription:@"response sent"];
 
-  self.testServer.responseCompletedBlock =
-      ^(GCDWebServerRequest *_Nonnull request, GCDWebServerResponse *_Nonnull response) {
+  self.testServer.requestHandler = ^(GCDWebServerDataRequest *_Nonnull request,
+                                     GCDWebServerResponse *_Nullable suggestedResponse,
+                                     GCDWebServerCompletionBlock _Nonnull completionBlock) {
         // Redefining the self var addresses strong self capturing in the XCTAssert macros.
         id self = weakSelf;
         XCTAssertNotNil(self);
         [responseSentExpectation fulfill];
-        XCTAssertEqual(response.statusCode, 200);
-        XCTAssertTrue(response.hasBody);
+        XCTAssertEqual(suggestedResponse.statusCode, 200);
+        XCTAssertTrue(suggestedResponse.hasBody);
       };
   return responseSentExpectation;
 }
@@ -849,6 +868,14 @@ typedef NS_ENUM(NSInteger, GDTNextRequestWaitTimeSource) {
   // 4. Wait for 1st upload finish.
   [self waitForUploadOperationsToFinish:self.uploader];
 }
+
+#pragma mark Request validation
+
+- (void)validateUploadRequest:(GCDWebServerDataRequest *)request {
+
+}
+
+#pragma mark Server URL
 
 - (nullable NSURL *)serverURLForTarget:(GDTCORTarget)target {
   // These strings should be interleaved to construct the real URL. This is just to (hopefully)

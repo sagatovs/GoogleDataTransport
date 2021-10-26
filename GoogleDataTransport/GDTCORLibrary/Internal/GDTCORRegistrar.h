@@ -19,6 +19,7 @@
 #import "GoogleDataTransport/GDTCORLibrary/Internal/GDTCORStorageProtocol.h"
 #import "GoogleDataTransport/GDTCORLibrary/Internal/GDTCORUploader.h"
 #import "GoogleDataTransport/GDTCORLibrary/Public/GoogleDataTransport/GDTCORTargets.h"
+#import "GoogleDataTransport/GDTCORLibrary/ClientMetrics/GDTCORClientMetricsControllerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -44,6 +45,9 @@ NS_ASSUME_NONNULL_BEGIN
  * @param target The target this backend object will be responsible for.
  */
 - (void)registerStorage:(id<GDTCORStorageProtocol>)storage target:(GDTCORTarget)target;
+
+/// An instance conforming to `GDTCORClientMetricsControllerProtocol`.
+@property(atomic) id<GDTCORClientMetricsControllerProtocol> clientMetricsController;
 
 @end
 
