@@ -90,7 +90,7 @@ static NSURL *_testServerURL = nil;
     return;
   }
 
-  GDTCORClientMetricsController *metricsController = [GDTCORClientMetricsController shared];
+  id<GDTCORClientMetricsControllerProtocol> metricsController = [GDTCORRegistrar sharedInstance].clientMetricsController;
 
   GDTCCTUploadOperation *uploadOperation =
       [[GDTCCTUploadOperation alloc] initWithTarget:target
