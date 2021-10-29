@@ -19,6 +19,8 @@
 
 #import "GoogleDataTransport/GDTCORLibrary/Public/GoogleDataTransport/GDTCORConsoleLogger.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 id<GDTCORStorageProtocol> _Nullable GDTCORStorageInstanceForTarget(GDTCORTarget target) {
   return [GDTCORRegistrar sharedInstance].targetToStorage[@(target)];
 }
@@ -34,13 +36,15 @@ id<GDTCORStoragePromiseProtocol> _Nullable GDTCORStoragePromiseInstanceForTarget
   }
 }
 
-@implementation GDTCORRegistrar {
-  /** Backing ivar for targetToUploader property. */
-  NSMutableDictionary<NSNumber *, id<GDTCORUploader>> *_targetToUploader;
-
-  /** Backing ivar for targetToStorage property. */
-  NSMutableDictionary<NSNumber *, id<GDTCORStorageProtocol>> *_targetToStorage;
+id<GDTCORClientMetricsControllerProtocol> _Nullable GDTCORMetricsControllerForTarget(GDTCORTarget target) {
+  return [[GDTCORRegistrar sharedInstance] metricsControllerForTarget:target];
 }
+
+@implementation GDTCORRegistrar
+
+@synthesize targetToUploader = _targetToUploader;
+@synthesize targetToStorage = _targetToStorage;
+@synthesize targetToMetricsController = _targetToMetricsController;
 
 + (instancetype)sharedInstance {
   static GDTCORRegistrar *sharedInstance;
@@ -57,6 +61,7 @@ id<GDTCORStoragePromiseProtocol> _Nullable GDTCORStoragePromiseInstanceForTarget
     _registrarQueue = dispatch_queue_create("com.google.GDTCORRegistrar", DISPATCH_QUEUE_SERIAL);
     _targetToUploader = [[NSMutableDictionary alloc] init];
     _targetToStorage = [[NSMutableDictionary alloc] init];
+    _targetToMetricsController = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
@@ -79,6 +84,7 @@ id<GDTCORStoragePromiseProtocol> _Nullable GDTCORStoragePromiseInstanceForTarget
     if (strongSelf) {
       GDTCORLogDebug(@"Registered storage: %@ for target:%ld", storage, (long)target);
       strongSelf->_targetToStorage[@(target)] = storage;
+      [self subscribeClientMetricsControllerForStorageUpdatesForTarget:target];
     }
   });
 }
@@ -105,6 +111,31 @@ id<GDTCORStoragePromiseProtocol> _Nullable GDTCORStoragePromiseInstanceForTarget
     }
   });
   return targetToStorage;
+}
+
+#pragma mark - Client metrics controller
+
+- (void)registerMetricsController:(id<GDTCORClientMetricsControllerProtocol>)metricsController forTarget:(GDTCORTarget)target {
+  __weak __auto_type weakSelf = self;
+  dispatch_async(_registrarQueue, ^{
+    __auto_type strongSelf = weakSelf;
+    if (strongSelf) {
+      strongSelf->_targetToMetricsController[@(target)] = metricsController;
+      [self subscribeClientMetricsControllerForStorageUpdatesForTarget:target];
+    }
+  });
+}
+
+- (nullable id<GDTCORClientMetricsControllerProtocol>)metricsControllerForTarget:(GDTCORTarget)target {
+  __block id<GDTCORClientMetricsControllerProtocol> metricsController;
+  dispatch_sync(_registrarQueue, ^{
+    metricsController = _targetToMetricsController[@(target)];
+  });
+  return metricsController;
+}
+
+- (void)subscribeClientMetricsControllerForStorageUpdatesForTarget:(GDTCORTarget)target {
+  _targetToStorage[@(target)].delegate = _targetToMetricsController[@(target)];
 }
 
 #pragma mark - GDTCORLifecycleProtocol
@@ -155,3 +186,5 @@ id<GDTCORStoragePromiseProtocol> _Nullable GDTCORStoragePromiseInstanceForTarget
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

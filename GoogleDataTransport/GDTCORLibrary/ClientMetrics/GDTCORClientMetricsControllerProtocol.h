@@ -18,13 +18,15 @@
 
 #import "GoogleDataTransport/GDTCORLibrary/ClientMetrics/GDTCOREventDropReason.h"
 
+#import "GoogleDataTransport/GDTCORLibrary/Internal/GDTCORStorageProtocol.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class FBLPromise<ResultType>;
 @class GDTCORClientMetrics;
 
 /// Client metrics controller API
-@protocol GDTCORClientMetricsControllerProtocol
+@protocol GDTCORClientMetricsControllerProtocol <GDTCORStorageDelegate>
 
 /// Logs a number of events dropped for a specified reason and mapping ID.
 /// @param reason The reason why events were dropped

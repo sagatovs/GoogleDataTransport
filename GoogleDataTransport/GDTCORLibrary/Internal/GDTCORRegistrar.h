@@ -46,8 +46,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)registerStorage:(id<GDTCORStorageProtocol>)storage target:(GDTCORTarget)target;
 
-/// An instance conforming to `GDTCORClientMetricsControllerProtocol`.
-@property(atomic) id<GDTCORClientMetricsControllerProtocol> clientMetricsController;
+/// Registers a client metrics controller implementation with the GoogleDataTransport infrastructure.
+/// @param metricsController The controller instance to be associated with this uploader and target.
+/// @param target The target this backend object will be responsible for.
+- (void)registerMetricsController:(id<GDTCORClientMetricsControllerProtocol>)metricsController forTarget:(GDTCORTarget)target;
 
 @end
 
