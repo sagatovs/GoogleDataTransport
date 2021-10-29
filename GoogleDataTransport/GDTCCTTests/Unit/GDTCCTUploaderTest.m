@@ -80,7 +80,7 @@ typedef NS_ENUM(NSInteger, GDTNextRequestWaitTimeSource) {
 
   // Configure fake client metrics controller.
   self.clientMetricsController = [[GDTCORClientMetricsControllerFake alloc] init];
-  [GDTCORRegistrar sharedInstance].clientMetricsController = self.clientMetricsController;
+  [[GDTCORRegistrar sharedInstance] registerMetricsController:self.clientMetricsController forTarget:kGDTCORTargetTest];
 
   self.clientMetricsController.getMetricsHandler = ^FBLPromise<GDTCORClientMetrics *> * _Nonnull{
     return [FBLPromise res];

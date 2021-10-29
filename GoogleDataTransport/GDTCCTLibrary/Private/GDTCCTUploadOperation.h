@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
                          queue:(dispatch_queue_t)queue
                        storage:(id<GDTCORStoragePromiseProtocol>)storage
               metadataProvider:(id<GDTCCTUploadMetadataProvider>)metadataProvider
-             metricsController:(id<GDTCORClientMetricsControllerProtocol>)metricsController
+             metricsController:(nullable id<GDTCORClientMetricsControllerProtocol>)metricsController
     NS_DESIGNATED_INITIALIZER;
 
 /** YES if a batch upload attempt was performed. NO otherwise. If NO for the finished operation,
