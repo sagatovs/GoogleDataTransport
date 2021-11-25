@@ -155,7 +155,10 @@ Shared library for iOS SDK data transport needs.
     test_spec.scheme = { :code_coverage => true }
     test_spec.platforms = {:ios => ios_deployment_target, :osx => osx_deployment_target, :tvos => tvos_deployment_target}
     test_spec.requires_app_host = false
-    test_spec.source_files = ['GoogleDataTransport/GDTCCTTests/Unit/**/*.{h,m}'] + common_cct_test_sources + common_test_sources
+    test_spec.source_files = [
+      'GoogleDataTransport/GDTCCTTests/Unit/**/*.{h,m}',
+      'GoogleDataTransport/GDTCORTests/Unit/Helpers/GDTCORClientMetricsControllerFake.[hm]'
+    ] + common_cct_test_sources + common_test_sources
     test_spec.resources = ['GoogleDataTransport/GDTCCTTests/Data/**/*']
     test_spec.pod_target_xcconfig = header_search_paths
     test_spec.dependency 'GCDWebServer'

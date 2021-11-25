@@ -82,10 +82,11 @@ typedef NS_ENUM(NSInteger, GDTNextRequestWaitTimeSource) {
   [[GDTCORRegistrar sharedInstance] registerMetricsController:self.clientMetricsController
                                                     forTarget:kGDTCORTargetTest];
 
-  //  self.clientMetricsController.getMetricsHandler = ^FBLPromise<GDTCORClientMetrics *> *_Nonnull
-  //  {
-  //    return [FBLPromise res];
-  //  };
+  __auto_type __weak weakSelf = self;
+  self.clientMetricsController.getMetricsHandler = ^FBLPromise<GDTCORClientMetrics *> *_Nonnull
+  {
+    return [FBLPromise resolvedWith:weakSelf.clientMetrics];
+  };
 }
 
 - (void)tearDown {
@@ -624,20 +625,7 @@ typedef NS_ENUM(NSInteger, GDTNextRequestWaitTimeSource) {
 }
 
 - (XCTestExpectation *)expectationTestServerSuccessRequestResponse {
-  __weak id weakSelf = self;
-  XCTestExpectation *responseSentExpectation = [self expectationWithDescription:@"response sent"];
-
-  self.testServer.requestHandler = ^(GCDWebServerDataRequest *_Nonnull request,
-                                     GCDWebServerResponse *_Nullable suggestedResponse,
-                                     GCDWebServerCompletionBlock _Nonnull completionBlock) {
-    // Redefining the self var addresses strong self capturing in the XCTAssert macros.
-    id self = weakSelf;
-    XCTAssertNotNil(self);
-    [responseSentExpectation fulfill];
-    XCTAssertEqual(suggestedResponse.statusCode, 200);
-    XCTAssertTrue(suggestedResponse.hasBody);
-  };
-  return responseSentExpectation;
+  return [self expectationTestServerResponseWithCode:200 headers:@{}];
 }
 
 - (XCTestExpectation *)

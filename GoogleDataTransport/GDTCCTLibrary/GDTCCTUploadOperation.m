@@ -236,7 +236,7 @@ typedef void (^GDTCCTUploaderEventBatchBlock)(NSNumber *_Nullable batchID,
             // 429 - Too many requests;
             // 5xx - Server errors.
             BOOL isTransientError = statusCode == 429 || (statusCode >= 500 && statusCode < 600);
-            BOOL shouldDeleteEvents = isSuccess || isTransientError;
+            BOOL shouldDeleteEvents = isSuccess || !isTransientError;
 
             if (isSuccess) {
               // Reset sent client metrics on success.
