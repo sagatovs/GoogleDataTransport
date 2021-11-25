@@ -51,7 +51,7 @@ typedef NS_ENUM(NSInteger, GDTNextRequestWaitTimeSource) {
 /// Fake client metrics controller.
 @property(nonatomic) GDTCORClientMetricsControllerFake *clientMetricsController;
 /// Client metrics to be returned by the fake metrics controller by default.
-@property(nonatomic) GDTCORClientMetrics *clientMetrics;
+@property(nonatomic, nullable) GDTCORClientMetrics *clientMetrics;
 
 @end
 
@@ -651,6 +651,8 @@ typedef NS_ENUM(NSInteger, GDTNextRequestWaitTimeSource) {
 
     [responseSentExpectation fulfill];
 
+    [self validateUploadRequest:request];
+
     completionBlock(response);
   };
 
@@ -861,6 +863,42 @@ typedef NS_ENUM(NSInteger, GDTNextRequestWaitTimeSource) {
 #pragma mark Request validation
 
 - (void)validateUploadRequest:(GCDWebServerDataRequest *)request {
+  NSError *parsingError;
+  __auto_type batchRequest = [GDTCCTTestRequestParser requestWithData:request.data error:&parsingError];
+  XCTAssertNil(parsingError);
+
+  __auto_type events = [GDTCCTTestRequestParser eventsWithBatchRequest:batchRequest error:&parsingError];
+  XCTAssertNil(parsingError);
+
+  [self assertEvents:events containsMetrics:self.clientMetrics];
+
+  // TODO: Add other events validation.
+}
+
+- (void)assertEvents:(NSArray<GDTCOREvent *> *)events
+     containsMetrics:(nullable GDTCORClientMetrics *)metrics {
+
+  NSArray<GDTCOREvent *> *metricsEvents = [events filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(GDTCOREvent *event, NSDictionary<NSString *,id> * _Nullable bindings) {
+    NSData *payload;
+    if ([event.dataObject isKindOfClass:[NSData class]]) {
+      payload = (NSData *)event.dataObject;
+
+      NSError *parsingError;
+      __auto_type metricsProto = [GDTCCTTestRequestParser clientMetricsWithData:payload error:&parsingError];
+
+      XCTAssertEqual(<#expression1#>, <#expression2, ...#>)
+
+      return parsingError == nil;
+    }
+    return NO;
+  }]];
+
+  BOOL expectMetricsEvent = metrics != nil;
+  if (expectMetricsEvent) {
+    XCTAssertEqual(metricsEvents.count, 1);
+  } else {
+    XCTAssertEqual(metricsEvents.count, 0);
+  }
 }
 
 #pragma mark Server URL
