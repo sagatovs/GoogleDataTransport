@@ -24,7 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface GDTCORClientMetricsController : NSObject <GDTCORClientMetricsControllerProtocol>
 
-id<GDTCORClientMetricsControllerProtocol> _Nullable GDTCORMetricsControllerForTarget(GDTCORTarget target);
+id<GDTCORClientMetricsControllerProtocol> _Nullable GDTCORMetricsControllerForTarget(
+    GDTCORTarget target);
 
 //- (instancetype)init NS_UNAVAILABLE;
 

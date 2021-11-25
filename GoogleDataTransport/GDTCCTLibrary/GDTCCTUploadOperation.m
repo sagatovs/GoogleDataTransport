@@ -75,7 +75,8 @@ typedef void (^GDTCCTUploaderEventBatchBlock)(NSNumber *_Nullable batchID,
 @property(nonatomic, readonly) NSURL *uploadURL;
 @property(nonatomic, readonly) id<GDTCORStoragePromiseProtocol> storage;
 @property(nonatomic, readonly) id<GDTCCTUploadMetadataProvider> metadataProvider;
-@property(nonatomic, readonly, nullable) id<GDTCORClientMetricsControllerProtocol> metricsController;
+@property(nonatomic, readonly, nullable) id<GDTCORClientMetricsControllerProtocol>
+    metricsController;
 
 /** The URL session that will attempt upload. */
 @property(nonatomic, nullable) NSURLSession *uploaderSession;
@@ -101,7 +102,8 @@ typedef void (^GDTCCTUploaderEventBatchBlock)(NSNumber *_Nullable batchID,
                          queue:(dispatch_queue_t)queue
                        storage:(id<GDTCORStoragePromiseProtocol>)storage
               metadataProvider:(id<GDTCCTUploadMetadataProvider>)metadataProvider
-             metricsController:(nullable id<GDTCORClientMetricsControllerProtocol>)metricsController {
+             metricsController:
+                 (nullable id<GDTCORClientMetricsControllerProtocol>)metricsController {
   self = [super init];
   if (self) {
     _uploaderQueue = queue;

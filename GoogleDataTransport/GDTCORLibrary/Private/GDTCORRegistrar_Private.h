@@ -24,17 +24,21 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly) dispatch_queue_t registrarQueue;
 
 /** A map of targets to backend implementations. */
-@property(nonatomic, readonly) NSMutableDictionary<NSNumber *, id<GDTCORUploader>> *targetToUploader;
+@property(nonatomic, readonly)
+    NSMutableDictionary<NSNumber *, id<GDTCORUploader>> *targetToUploader;
 
 /** A map of targets to storage instances. */
 @property(nonatomic, readonly)
     NSMutableDictionary<NSNumber *, id<GDTCORStorageProtocol>> *targetToStorage;
 
 /// A map of targets to metrics controller instances.
-@property(nonatomic, readonly) NSMutableDictionary<NSNumber *, id<GDTCORClientMetricsControllerProtocol>> *targetToMetricsController;
+@property(nonatomic, readonly)
+    NSMutableDictionary<NSNumber *, id<GDTCORClientMetricsControllerProtocol>>
+        *targetToMetricsController;
 
 /// A thread-safe method to retrieve a metrics controller instance for the specified target
-- (nullable id<GDTCORClientMetricsControllerProtocol>)metricsControllerForTarget:(GDTCORTarget)target;
+- (nullable id<GDTCORClientMetricsControllerProtocol>)metricsControllerForTarget:
+    (GDTCORTarget)target;
 
 @end
 

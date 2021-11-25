@@ -16,10 +16,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import "GoogleDataTransport/GDTCORLibrary/ClientMetrics/GDTCORClientMetricsControllerProtocol.h"
 #import "GoogleDataTransport/GDTCORLibrary/Internal/GDTCORStorageProtocol.h"
 #import "GoogleDataTransport/GDTCORLibrary/Internal/GDTCORUploader.h"
 #import "GoogleDataTransport/GDTCORLibrary/Public/GoogleDataTransport/GDTCORTargets.h"
-#import "GoogleDataTransport/GDTCORLibrary/ClientMetrics/GDTCORClientMetricsControllerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -46,10 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)registerStorage:(id<GDTCORStorageProtocol>)storage target:(GDTCORTarget)target;
 
-/// Registers a client metrics controller implementation with the GoogleDataTransport infrastructure.
+/// Registers a client metrics controller implementation with the GoogleDataTransport
+/// infrastructure.
 /// @param metricsController The controller instance to be associated with this uploader and target.
 /// @param target The target this backend object will be responsible for.
-- (void)registerMetricsController:(id<GDTCORClientMetricsControllerProtocol>)metricsController forTarget:(GDTCORTarget)target;
+- (void)registerMetricsController:(id<GDTCORClientMetricsControllerProtocol>)metricsController
+                        forTarget:(GDTCORTarget)target;
 
 @end
 

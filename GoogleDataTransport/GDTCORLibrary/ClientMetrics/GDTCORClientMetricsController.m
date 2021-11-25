@@ -26,7 +26,6 @@
 
 #import "GoogleDataTransport/GDTCORLibrary/Private/GDTCORFlatFileStorage.h"
 
-
 @interface GDTCORClientMetricsController ()
 @property(readonly) id<GDTCORStoragePromiseProtocol> storage;
 @end
@@ -35,8 +34,10 @@
 
 + (void)load {
   // Register a metrics controller instance only for supported backends.
-  [[GDTCORRegistrar sharedInstance] registerMetricsController:[self sharedInstance] forTarget:kGDTCORTargetFLL];
-  [[GDTCORRegistrar sharedInstance] registerMetricsController:[self sharedInstance] forTarget:kGDTCORTargetCSH];
+  [[GDTCORRegistrar sharedInstance] registerMetricsController:[self sharedInstance]
+                                                    forTarget:kGDTCORTargetFLL];
+  [[GDTCORRegistrar sharedInstance] registerMetricsController:[self sharedInstance]
+                                                    forTarget:kGDTCORTargetCSH];
 }
 
 + (instancetype)sharedInstance {
@@ -65,12 +66,12 @@
 
 #pragma - GDTCORStorageDelegate
 
-- (void)storage:(nonnull id<GDTCORStoragePromiseProtocol>)storage didDropEvent:(nonnull GDTCOREvent *)event {
-
+- (void)storage:(nonnull id<GDTCORStoragePromiseProtocol>)storage
+    didDropEvent:(nonnull GDTCOREvent *)event {
 }
 
-- (void)storage:(nonnull id<GDTCORStoragePromiseProtocol>)storage didRemoveExpiredEvents:(NSUInteger)eventCount {
-
+- (void)storage:(nonnull id<GDTCORStoragePromiseProtocol>)storage
+    didRemoveExpiredEvents:(NSUInteger)eventCount {
 }
 
 @end

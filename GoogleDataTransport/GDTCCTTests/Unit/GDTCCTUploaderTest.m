@@ -28,9 +28,8 @@
 #import "GoogleDataTransport/GDTCORTests/Unit/Helpers/GDTCORClientMetricsControllerFake.h"
 
 #import "GoogleDataTransport/GDTCCTTests/Unit/Helpers/GDTCCTEventGenerator.h"
-#import "GoogleDataTransport/GDTCCTTests/Unit/TestServer/GDTCCTTestServer.h"
 #import "GoogleDataTransport/GDTCCTTests/Unit/Helpers/GDTCCTTestRequestParser.h"
-
+#import "GoogleDataTransport/GDTCCTTests/Unit/TestServer/GDTCCTTestServer.h"
 
 typedef NS_ENUM(NSInteger, GDTNextRequestWaitTimeSource) {
   GDTNextRequestWaitTimeSourceResponseBody,
@@ -80,11 +79,13 @@ typedef NS_ENUM(NSInteger, GDTNextRequestWaitTimeSource) {
 
   // Configure fake client metrics controller.
   self.clientMetricsController = [[GDTCORClientMetricsControllerFake alloc] init];
-  [[GDTCORRegistrar sharedInstance] registerMetricsController:self.clientMetricsController forTarget:kGDTCORTargetTest];
+  [[GDTCORRegistrar sharedInstance] registerMetricsController:self.clientMetricsController
+                                                    forTarget:kGDTCORTargetTest];
 
-  self.clientMetricsController.getMetricsHandler = ^FBLPromise<GDTCORClientMetrics *> * _Nonnull{
-    return [FBLPromise res];
-  };
+  //  self.clientMetricsController.getMetricsHandler = ^FBLPromise<GDTCORClientMetrics *> *_Nonnull
+  //  {
+  //    return [FBLPromise res];
+  //  };
 }
 
 - (void)tearDown {
@@ -629,13 +630,13 @@ typedef NS_ENUM(NSInteger, GDTNextRequestWaitTimeSource) {
   self.testServer.requestHandler = ^(GCDWebServerDataRequest *_Nonnull request,
                                      GCDWebServerResponse *_Nullable suggestedResponse,
                                      GCDWebServerCompletionBlock _Nonnull completionBlock) {
-        // Redefining the self var addresses strong self capturing in the XCTAssert macros.
-        id self = weakSelf;
-        XCTAssertNotNil(self);
-        [responseSentExpectation fulfill];
-        XCTAssertEqual(suggestedResponse.statusCode, 200);
-        XCTAssertTrue(suggestedResponse.hasBody);
-      };
+    // Redefining the self var addresses strong self capturing in the XCTAssert macros.
+    id self = weakSelf;
+    XCTAssertNotNil(self);
+    [responseSentExpectation fulfill];
+    XCTAssertEqual(suggestedResponse.statusCode, 200);
+    XCTAssertTrue(suggestedResponse.hasBody);
+  };
   return responseSentExpectation;
 }
 
@@ -872,7 +873,6 @@ typedef NS_ENUM(NSInteger, GDTNextRequestWaitTimeSource) {
 #pragma mark Request validation
 
 - (void)validateUploadRequest:(GCDWebServerDataRequest *)request {
-
 }
 
 #pragma mark Server URL

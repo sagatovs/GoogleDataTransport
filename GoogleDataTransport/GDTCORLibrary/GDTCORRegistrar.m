@@ -36,7 +36,8 @@ id<GDTCORStoragePromiseProtocol> _Nullable GDTCORStoragePromiseInstanceForTarget
   }
 }
 
-id<GDTCORClientMetricsControllerProtocol> _Nullable GDTCORMetricsControllerForTarget(GDTCORTarget target) {
+id<GDTCORClientMetricsControllerProtocol> _Nullable GDTCORMetricsControllerForTarget(
+    GDTCORTarget target) {
   return [[GDTCORRegistrar sharedInstance] metricsControllerForTarget:target];
 }
 
@@ -115,7 +116,8 @@ id<GDTCORClientMetricsControllerProtocol> _Nullable GDTCORMetricsControllerForTa
 
 #pragma mark - Client metrics controller
 
-- (void)registerMetricsController:(id<GDTCORClientMetricsControllerProtocol>)metricsController forTarget:(GDTCORTarget)target {
+- (void)registerMetricsController:(id<GDTCORClientMetricsControllerProtocol>)metricsController
+                        forTarget:(GDTCORTarget)target {
   __weak __auto_type weakSelf = self;
   dispatch_async(_registrarQueue, ^{
     __auto_type strongSelf = weakSelf;
@@ -126,7 +128,8 @@ id<GDTCORClientMetricsControllerProtocol> _Nullable GDTCORMetricsControllerForTa
   });
 }
 
-- (nullable id<GDTCORClientMetricsControllerProtocol>)metricsControllerForTarget:(GDTCORTarget)target {
+- (nullable id<GDTCORClientMetricsControllerProtocol>)metricsControllerForTarget:
+    (GDTCORTarget)target {
   __block id<GDTCORClientMetricsControllerProtocol> metricsController;
   dispatch_sync(_registrarQueue, ^{
     metricsController = _targetToMetricsController[@(target)];
