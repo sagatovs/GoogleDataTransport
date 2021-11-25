@@ -267,10 +267,11 @@ typedef void (^GDTCCTUploaderEventBatchBlock)(NSNumber *_Nullable batchID,
   return [self clientMetricsEvent]
       .thenOn(
           self.uploaderQueue,
-          ^NSURLRequest *(GDTCOREvent *clientMetricsEvent) {
+          ^NSURLRequest *(GDTCOREvent *_Nullable clientMetricsEvent) {
             // 1. Prepare URL request.
             NSSet<GDTCOREvent *> *eventsToSend =
-                [batch.events setByAddingObject:clientMetricsEvent];
+                clientMetricsEvent ? [batch.events setByAddingObject:clientMetricsEvent]
+                                   : batch.events;
             NSData *requestProtoData = [self constructRequestProtoWithEvents:eventsToSend];
             NSData *gzippedData = [GDTCCTCompressionHelper gzippedData:requestProtoData];
             BOOL usingGzipData = gzippedData != nil && gzippedData.length < requestProtoData.length;
@@ -510,6 +511,11 @@ typedef void (^GDTCCTUploaderEventBatchBlock)(NSNumber *_Nullable batchID,
 #pragma mark - Client metrics
 
 - (FBLPromise<GDTCOREvent *> *)clientMetricsEvent {
+  // Create a metrics event only for targets that support it.
+  if (![self.metadataProvider areMetricsSupportedForTarget:self.target]) {
+    return [FBLPromise resolvedWith:nil];
+  }
+
   return [self.metricsController getMetrics].thenOn(
       self.uploaderQueue, ^GDTCOREvent *(GDTCORClientMetrics *metrics) {
         self.clientMetricsToUpload = metrics;

@@ -190,6 +190,22 @@ static NSURL *_testServerURL = nil;
   return nil;
 }
 
+- (BOOL)areMetricsSupportedForTarget:(GDTCORTarget)target {
+  switch (target) {
+    // Client metrics are supported only by the Firelog backend.
+    case kGDTCORTargetFLL:
+    case kGDTCORTargetCSH:
+      return YES;
+      break;
+
+    case kGDTCORTargetTest:
+    case kGDTCORTargetCCT:
+    case kGDTCORTargetINT:
+      return NO;
+      break;
+  }
+}
+
 #if !NDEBUG
 
 - (BOOL)waitForUploadFinishedWithTimeout:(NSTimeInterval)timeout {

@@ -36,6 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
 /** Returns an API key for the specified target. */
 - (nullable NSString *)APIKeyForTarget:(GDTCORTarget)target;
 
+/** Returns if client metrics are supported for the specified target. */
+- (BOOL)areMetricsSupportedForTarget:(GDTCORTarget)target;
+
 @end
 
 /** Class capable of uploading events to the CCT backend. */
